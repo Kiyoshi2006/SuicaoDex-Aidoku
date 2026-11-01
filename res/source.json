@@ -1,0 +1,12 @@
+{
+  "info": {
+    "id": "vi.suicaodex",
+    "name": "SuicaoDex",
+    "version": 2,
+    "url": "https://suicaodex.com",
+    "contentRating": 1,
+    "languages": [
+      "vi"
+    ]
+  }
+}

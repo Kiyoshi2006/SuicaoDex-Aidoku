@@ -1,0 +1,81 @@
+name: Build & Release SuicaoDex.aix
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust stable + wasm32 target
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+
+      - name: Cache cargo registry
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: ${{ runner.os }}-cargo-
+
+      - name: Install aidoku CLI
+        run: |
+          cargo install --git https://github.com/Aidoku/aidoku-rs aidoku-cli --locked
+        env:
+          CARGO_NET_GIT_FETCH_WITH_CLI: true
+
+      - name: Build source (wasm32)
+        run: cargo build --release --target wasm32-unknown-unknown
+
+      - name: Package as .aix
+        run: aidoku package
+
+      - name: Rename output
+        run: |
+          find . -name "*.aix" | head -1 | xargs -I{} cp {} SuicaoDex.aix
+          ls -lh SuicaoDex.aix
+
+      - name: Verify package
+        run: aidoku verify SuicaoDex.aix || true
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: SuicaoDex.aix
+          path: SuicaoDex.aix
+
+      - name: Create or update release (on push to main or tag)
+        if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'latest' }}
+          name: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'Latest Build' }}
+          prerelease: ${{ !startsWith(github.ref, 'refs/tags/') }}
+          files: SuicaoDex.aix
+          body: |
+            ## SuicaoDex Aidoku Extension
+
+            ### Cài đặt
+            1. Tải file `SuicaoDex.aix` bên dưới
+            2. Mở Aidoku trên iPhone
+            3. Settings → Sources → Add Source → chọn file `.aix`
+
+            ### Tính năng
+            - Tìm kiếm truyện manga
+            - Danh sách mới cập nhật
+            - Chi tiết truyện (bìa, mô tả, tác giả, thể loại)
+            - Danh sách chương với nhóm dịch
+            - Đọc ảnh (optimizedUrl → replicaUrl → url fallback)
+            - Phân trang đầy đủ
