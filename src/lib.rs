@@ -1,5 +1,5 @@
 //! SuicaoDex Aidoku source
-//! API: https://api.suicaodex.com  (SuicaoDex production REST API)
+//! API: https://redive.suicaodex.com  (SuicaoDex production REST API)
 #![no_std]
 
 use aidoku::{
@@ -11,7 +11,7 @@ use aidoku::{
 };
 use serde_json::Value;
 
-const API_BASE: &str = "https://api.suicaodex.com";
+const API_BASE: &str = "https://redive.suicaodex.com";
 const PAGE_SIZE: u32 = 24;
 
 // ─── Listing IDs ────────────────────────────────────────────────────────────

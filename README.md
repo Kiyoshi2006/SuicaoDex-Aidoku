@@ -38,7 +38,7 @@ aidoku verify *.aix
 
 ## API
 
-Extension kết nối trực tiếp với `https://api.suicaodex.com` — không cần VPS, không cần proxy.
+Extension kết nối trực tiếp với `https://redive.suicaodex.com` — không cần VPS, không cần proxy.
 
 ## License
 
