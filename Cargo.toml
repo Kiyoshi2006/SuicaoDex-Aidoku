@@ -8,6 +8,7 @@ crate-type = ["cdylib"]
 
 [dependencies]
 aidoku = { git = "https://github.com/Aidoku/aidoku-rs", features = ["json"] }
+serde_json = { version = "1", default-features = false, features = ["alloc"] }
 
 [profile.dev]
 panic = "abort"
