@@ -44,11 +44,23 @@ fn get_json(path: &str) -> Result<Value> {
     let url = format!("{}{}", API_BASE, path);
     let resp = Request::get(&url)?
         .header("Accept", "application/json")
-        .header("User-Agent", "Aidoku/2 (iOS; SuicaoDex)")
+        .header("User-Agent", "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15")
         .header("Origin", "https://suicaodex.com")
         .header("Referer", "https://suicaodex.com/")
-        .json_owned::<Value>()?;
-    Ok(resp)
+        .send()?;
+    let status = resp.status_code();
+    let body = resp.get_string()?;
+    if !(200..300).contains(&status) {
+        let snippet: String = body.chars().take(160).collect();
+        bail!("HTTP {} từ {}: {}", status, url, snippet);
+    }
+    match serde_json::from_str::<Value>(&body) {
+        Ok(v) => Ok(v),
+        Err(_) => {
+            let snippet: String = body.chars().take(160).collect();
+            bail!("Không phải JSON ({}): {}", url, snippet)
+        }
+    }
 }
 
 // ─── Tiny helpers ────────────────────────────────────────────────────────────

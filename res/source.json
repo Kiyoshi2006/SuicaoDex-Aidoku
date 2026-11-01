@@ -2,11 +2,21 @@
   "info": {
     "id": "vi.suicaodex",
     "name": "SuicaoDex",
-    "version": 2,
+    "version": 3,
     "url": "https://suicaodex.com",
     "contentRating": 1,
     "languages": [
       "vi"
     ]
-  }
+  },
+  "listings": [
+    {
+      "id": "latest",
+      "name": "Mới cập nhật"
+    },
+    {
+      "id": "popular",
+      "name": "Truyện"
+    }
+  ]
 }
